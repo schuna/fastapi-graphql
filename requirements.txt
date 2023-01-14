@@ -1,0 +1,14 @@
+sqlalchemy
+python-dotenv
+fastapi
+uvicorn
+pyyaml
+dependency-injector
+strawberry-graphql
+alembic
+passlib
+python-jose
+pymysql
+python-multipart
+bcrypt
+pydantic
