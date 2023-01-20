@@ -14,7 +14,10 @@ load_dotenv()
 # access to the values within the .ini file in use.
 config = context.config
 if not config.get_main_option('sqlalchemy.url'):
-    config.set_main_option('sqlalchemy.url', os.getenv("DATABASE_URL", "sqlite:///./database.db"))
+    config.set_main_option(
+        'sqlalchemy.url',
+        os.getenv("DATABASE_URL", "sqlite:///./database.db").replace("%", "%%")
+    )
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:
