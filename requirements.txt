@@ -12,3 +12,4 @@ pymysql
 python-multipart
 bcrypt
 pydantic
+gql[aiohttp]

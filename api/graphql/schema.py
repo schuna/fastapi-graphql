@@ -1,7 +1,10 @@
+from typing import List
+
 # noinspection PyPackageRequirements
 import strawberry
+from strawberry.file_uploads import Upload
 
-from api.graphql.fields import UserSchema
+from api.graphql.fields import UserSchema, FolderInput
 from api.graphql.resolvers import get_users, create_user, get_user
 from api.utils.auth import IsAuthenticated
 
@@ -24,6 +27,26 @@ class Mutation:
         resolver=create_user,
         permission_classes=[IsAuthenticated]
     )
+
+    @strawberry.mutation
+    async def read_file(self, file: Upload) -> str:
+        return (await file.read()).decode("utf-8")
+
+    @strawberry.mutation
+    async def read_files(self, files: List[Upload]) -> List[str]:
+        contents = []
+        for file in files:
+            content = (await file.read()).decode("uft-8")
+            contents.append(content)
+        return contents
+
+    @strawberry.mutation
+    async def read_folder(self, folder: FolderInput) -> List[str]:
+        contents = []
+        for file in folder.files:
+            content = (await file.read()).decode("utf-8")
+            contents.append(content)
+        return contents
 
 
 schema = strawberry.Schema(

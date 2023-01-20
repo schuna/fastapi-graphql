@@ -1,7 +1,8 @@
-from typing import Optional, Any
+from typing import Optional, Any, List
 
 # noinspection PyPackageRequirements
 import strawberry
+from strawberry.file_uploads import Upload
 
 
 @strawberry.type
@@ -32,3 +33,8 @@ class UserCreateInput:
     username: str
     email: str
     password: str
+
+
+@strawberry.input
+class FolderInput:
+    files: List[Upload]
