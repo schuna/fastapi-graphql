@@ -4,6 +4,7 @@ from strawberry.types import Info
 
 from api.graphql.fields import UserSchema, UserCreateInput
 from api.schemas import UserCreateSchema
+from api.utils.auth import Hash
 
 
 async def get_users(info: Info) -> list[UserSchema]:
@@ -16,6 +17,7 @@ async def get_user(user_id: int, info: Info) -> UserSchema:
 
 async def create_user(data: UserCreateInput, info: Info) -> UserSchema:
     entry = UserCreateSchema(**data.__dict__)
+    entry.password = Hash.bcrypt(entry.password)
     response = info.context.user_service.create(entry)
     if response.success:
         return response.data
