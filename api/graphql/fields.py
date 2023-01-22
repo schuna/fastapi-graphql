@@ -28,6 +28,11 @@ class UserSchema:
     password: str
 
 
+@strawberry.type
+class UploadFileSchema:
+    filename: str
+
+
 @strawberry.input
 class UserCreateInput:
     username: str

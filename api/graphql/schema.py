@@ -4,8 +4,8 @@ from typing import List
 import strawberry
 from strawberry.file_uploads import Upload
 
-from api.graphql.fields import UserSchema, FolderInput
-from api.graphql.resolvers import get_users, create_user, get_user
+from api.graphql.fields import UserSchema, FolderInput, UploadFileSchema
+from api.graphql.resolvers import get_users, create_user, get_user, upload_file
 from api.utils.auth import IsAuthenticated
 
 
@@ -28,9 +28,10 @@ class Mutation:
         permission_classes=[IsAuthenticated]
     )
 
-    @strawberry.mutation
-    async def read_file(self, file: Upload) -> str:
-        return (await file.read()).decode("utf-8")
+    read_file: UploadFileSchema = strawberry.mutation(
+        resolver=upload_file,
+        permission_classes=[IsAuthenticated]
+    )
 
     @strawberry.mutation
     async def read_files(self, files: List[Upload]) -> List[str]:

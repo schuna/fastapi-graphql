@@ -1,8 +1,14 @@
+import os
+import uuid
+from pathlib import Path
+
 from fastapi import HTTPException, status
+# noinspection PyPackageRequirements
+from strawberry.file_uploads import Upload
 # noinspection PyPackageRequirements
 from strawberry.types import Info
 
-from api.graphql.fields import UserSchema, UserCreateInput
+from api.graphql.fields import UserSchema, UserCreateInput, UploadFileSchema
 from api.schemas import UserCreateSchema
 from api.utils.auth import Hash
 
@@ -22,3 +28,14 @@ async def create_user(data: UserCreateInput, info: Info) -> UserSchema:
     if response.success:
         return response.data
     raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"{response.message}")
+
+
+async def upload_file(filename: str, file: Upload):
+    upload_dir = Path("asset")
+    content = await file.read()
+    filename = f"{str(uuid.uuid4())}_{filename}"
+
+    with open(os.path.join(upload_dir, filename), "wb") as fp:
+        fp.write(content)
+
+    return UploadFileSchema(**{"filename": filename})
