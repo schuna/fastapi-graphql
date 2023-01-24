@@ -1,3 +1,4 @@
+import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI
 
@@ -30,3 +31,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=['*']
 )
+
+
+def serve():
+    uvicorn.run(app, host="localhost", port=8000)
+
+
+if __name__ == '__main__':
+    serve()
