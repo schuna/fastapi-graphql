@@ -1,7 +1,9 @@
-from typing import List
+import asyncio
+from typing import List, AsyncGenerator
 
 # noinspection PyPackageRequirements
 import strawberry
+# noinspection PyPackageRequirements
 from strawberry.file_uploads import Upload
 
 from api.graphql.fields import UserSchema, FolderInput
@@ -49,7 +51,26 @@ class Mutation:
         return contents
 
 
+@strawberry.type
+class Subscription:
+    @strawberry.subscription
+    async def user_added_subscription(self, info) -> AsyncGenerator[UserSchema, None]:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.setLevel(logging.DEBUG)
+        logger.info("starting add user")
+        logger.info(id(info.context.broadcast))
+
+        async with info.context.broadcast.subscribe(channel="add_user") as subscriber:
+            logger.info(f"{subscriber}")
+            async for event in subscriber:
+                user = event.message
+                logger.info(f"publish user: {UserSchema(**user)}")
+                yield UserSchema(**user)
+
+
 schema = strawberry.Schema(
     query=Query,
-    mutation=Mutation
+    mutation=Mutation,
+    subscription=Subscription
 )

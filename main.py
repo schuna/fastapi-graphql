@@ -15,6 +15,7 @@ app = FastAPI()
 app.container = container
 app.include_router(login_endpoint.router)
 app.include_router(graphql_router, prefix="/graphql")
+app.add_websocket_route("/graphql", graphql_router)
 
 origins = [
     'http://localhost:3000',

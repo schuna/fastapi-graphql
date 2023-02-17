@@ -9,7 +9,7 @@ import UserDetail from './components/UserDetail';
 import UserForm from './components/UserForm';
 import NavBar from './components/NavBar';
 import SignUpForm from "./components/SignUpForm";
-import {client} from "./graphql/queries";
+import {client} from "./graphql/client";
 
 function App() {
     const navigate = useNavigate();

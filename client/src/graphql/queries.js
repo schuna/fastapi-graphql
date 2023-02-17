@@ -1,13 +1,17 @@
 // noinspection GraphQLUnresolvedReference
 
-import {ApolloClient, gql, InMemoryCache} from "@apollo/client";
+import {gql} from "@apollo/client";
 
-const GRAPHQL_URL = 'http://localhost:8000/graphql';
-
-export const client = new ApolloClient({
-    uri: GRAPHQL_URL,
-    cache: new InMemoryCache()
-});
+export const USER_ADDED_SUBSCRIPTION = gql`
+    subscription {
+        user: userAddedSubscription {
+            email
+            id
+            password
+            username
+        }
+    }
+`;
 export const USERS_QUERY = gql`
     query {
         users {
@@ -31,7 +35,7 @@ export const USER_QUERY = gql`
 `;
 
 export const CREATE_USER_MUTATION = gql`
-     mutation createUserMutation($input: UserCreateInput!) {
+    mutation createUserMutation($input: UserCreateInput!) {
         user(data: $input ) {
             email
             id

@@ -14,7 +14,7 @@ function UserForm() {
         const user = await createUser(username, email, password)
         console.log('create a new user:', {username: username, email: email});
         console.log('user created:', user);
-        navigate(`/users/${user.id}`);
+        navigate(`/`);
     };
     if (error) {
         return <p>
