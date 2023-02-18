@@ -1,12 +1,12 @@
-sqlalchemy
-python-dotenv
-fastapi
+sqlalchemy~=1.4.46
+python-dotenv~=0.21.0
+fastapi~=0.89.1
 uvicorn
 pyyaml
 dependency-injector
 strawberry-graphql
-alembic
-passlib
+alembic~=1.9.1
+passlib~=1.7.4
 python-jose
 pymysql
 python-multipart
@@ -14,3 +14,5 @@ bcrypt
 pydantic
 gql[aiohttp]
 broadcaster
+pydantic~=1.10.4
+gql[aiohttp]~=3.4.0
