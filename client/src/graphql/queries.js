@@ -25,11 +25,11 @@ export const USERS_QUERY = gql`
 
 export const USER_QUERY = gql`
     query UserQuery($id: Int!){
-        user(userId: $id) {
-            email
+        user(userId: $id) {            
             id
             username
             email
+            password
         }
     }
 `;
