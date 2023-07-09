@@ -4,7 +4,6 @@ from api.database import Database
 from api.models import User
 from api.repositories.user import UserRepository
 from api.schemas import UserCreateSchema
-from api.services.user import UserService
 
 
 class Container(containers.DeclarativeContainer):
@@ -19,7 +18,4 @@ class Container(containers.DeclarativeContainer):
         model=User,
         session_factory=db.provided.session,
     )
-    user_service = providers.Factory(
-        UserService[User, UserCreateSchema],
-        repository=user_repository,
-    )
+

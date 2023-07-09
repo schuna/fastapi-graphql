@@ -8,9 +8,9 @@ from jose import jwt, JWTError
 
 from api.container import Container
 from api.models import User
+from api.repositories.user import UserRepository
 from api.schemas import UserCreateSchema, UserDisplaySchema
 from api.graphql.fields import TokenSchema
-from api.services.user import UserService
 from api.utils.auth import (
     Hash, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES, oauth2_scheme, SECRET_KEY, ALGORITHM
 )
@@ -29,7 +29,7 @@ credentials_exception = HTTPException(
 @inject
 def get_current_user(
         token: str = Depends(oauth2_scheme),
-        user_service: UserService[User, UserCreateSchema] = Depends(Provide[Container.user_service])):
+        user_repository: UserRepository[User, UserCreateSchema] = Depends(Provide[Container.user_repository])):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("username")
@@ -38,7 +38,7 @@ def get_current_user(
     except JWTError:
         raise credentials_exception
 
-    response = user_service.get_user_by_name(username)
+    response = user_repository.get_by_username(username)
 
     if not response.success:
         raise credentials_exception
@@ -50,8 +50,8 @@ def get_current_user(
 @inject
 def login(
         request_form: OAuth2PasswordRequestForm = Depends(),
-        user_service: UserService[User, UserCreateSchema] = Depends(Provide[Container.user_service])):
-    user_response = user_service.get_user_by_name(request_form.username)
+        user_repository: UserRepository[User, UserCreateSchema] = Depends(Provide[Container.user_repository])):
+    user_response = user_repository.get_by_username(request_form.username)
     if not user_response.success:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid credentials")
     user = user_response.data
@@ -73,9 +73,9 @@ def login(
 @inject
 def create_user(
         request: UserCreateSchema,
-        user_service: UserService[User, UserCreateSchema] = Depends(Provide[Container.user_service])):
+        user_repository: UserRepository[User, UserCreateSchema] = Depends(Provide[Container.user_repository])):
     request.password = Hash.bcrypt(request.password)
-    response = user_service.create(request)
+    response = user_repository.add(request)
     if response.success:
         return response.data
     else:
@@ -86,8 +86,8 @@ def create_user(
 @inject
 def get_user(
         user_id: int,
-        user_service: UserService[User, UserCreateSchema] = Depends(Provide[Container.user_service])):
-    response = user_service.read(user_id)
+        user_repository: UserRepository[User, UserCreateSchema] = Depends(Provide[Container.user_repository])):
+    response = user_repository.get(user_id)
     if response.success:
         return response.data
     else:
@@ -98,9 +98,9 @@ def get_user(
 @inject
 def update_user(user_id: int,
                 request: UserCreateSchema,
-                user_service: UserService[User, UserCreateSchema] = Depends(Provide[Container.user_service])):
+                user_repository: UserRepository[User, UserCreateSchema] = Depends(Provide[Container.user_repository])):
     request.password = Hash.bcrypt(request.password)
-    response = user_service.update(user_id, request)
+    response = user_repository.update(user_id, request)
     if response.success:
         return response.data
     else:
@@ -111,9 +111,9 @@ def update_user(user_id: int,
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 @inject
 def delete_user(user_id: int,
-                user_service: UserService[User, UserCreateSchema] = Depends(Provide[Container.user_service]),
+                user_repository: UserRepository[User, UserCreateSchema] = Depends(Provide[Container.user_repository]),
                 current_user: UserDisplaySchema = Depends(get_current_user)):
-    response = user_service.delete(user_id)
+    response = user_repository.delete(user_id)
     if response.success:
         return response.data
     else:

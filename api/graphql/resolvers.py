@@ -15,18 +15,18 @@ from api.utils.auth import Hash
 
 
 async def get_users(info: Info) -> list[UserSchema]:
-    return info.context.user_service.reads().data
+    return info.context.user_repository.gets().data
 
 
 async def get_user(user_id: int, info: Info) -> UserSchema:
-    return info.context.user_service.read(user_id).data
+    return info.context.user_repository.get(user_id).data
 
 
 async def create_user(data: UserCreateInput, info: Info) -> UserSchema:
     data.password = Hash.bcrypt(data.password)
     entry = UserCreateSchema(**data.__dict__)
     entry.password = Hash.bcrypt(entry.password)
-    response = info.context.user_service.create(entry)
+    response = info.context.user_repository.add(entry)
     if response.success:
         await info.context.broadcast.publish(channel="add_user", message=jsonable_encoder(response.data))
         user_json = jsonable_encoder(response.data)

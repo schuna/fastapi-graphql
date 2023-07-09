@@ -8,8 +8,8 @@ from strawberry.subscriptions import GRAPHQL_TRANSPORT_WS_PROTOCOL, GRAPHQL_WS_P
 from api.container import Container
 from api.graphql.schema import schema
 from api.models import User
+from api.repositories.user import UserRepository
 from api.schemas import UserCreateSchema
-from api.services.user import UserService
 
 
 class CustomContext(BaseContext):
@@ -18,10 +18,10 @@ class CustomContext(BaseContext):
     @inject
     def __init__(
             self,
-            user_service: UserService[User, UserCreateSchema] = Depends(Provide[Container.user_service])
+            user_repository: UserRepository[User, UserCreateSchema] = Depends(Provide[Container.user_repository])
     ):
         super().__init__()
-        self.user_service = user_service
+        self.user_repository = user_repository
 
 
 broadcast = None
