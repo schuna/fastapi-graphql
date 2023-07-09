@@ -2,8 +2,10 @@ from dependency_injector import containers, providers
 
 from api.database import Database
 from api.models import User
+from api.models.message import Message
+from api.repositories.message import MessageRepository
 from api.repositories.user import UserRepository
-from api.schemas import UserCreateSchema
+from api.schemas import UserCreateSchema, MessageCreateSchema
 
 
 class Container(containers.DeclarativeContainer):
@@ -16,6 +18,11 @@ class Container(containers.DeclarativeContainer):
     user_repository = providers.Factory(
         UserRepository[User, UserCreateSchema],
         model=User,
+        session_factory=db.provided.session,
+    )
+    message_repository = providers.Factory(
+        MessageRepository[Message, MessageCreateSchema],
+        model=Message,
         session_factory=db.provided.session,
     )
 

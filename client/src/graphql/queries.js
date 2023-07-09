@@ -25,7 +25,7 @@ export const USERS_QUERY = gql`
 
 export const USER_QUERY = gql`
     query UserQuery($id: Int!){
-        user(userId: $id) {            
+        user(userId: $id) {
             id
             username
             email
@@ -45,3 +45,23 @@ export const CREATE_USER_MUTATION = gql`
     }
 `;
 
+
+export const MESSAGES_QUERY = gql`
+    query MessagesQuery {
+        messages {
+            id
+            tid
+            text
+        }
+    }
+`;
+
+export const MESSAGE_ADDED_SUBSCRIPTION = gql`
+    subscription MessageAddedSubscription {
+        messages: messageAddedSubscription {
+            id    
+            tid
+            text
+        }
+    }
+`;

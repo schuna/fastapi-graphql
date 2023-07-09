@@ -26,3 +26,8 @@ class TokenPayload(BaseModel):
 class TokenDataError(BaseModel):
     status: str
     message: str
+
+
+class MessageCreateSchema(BaseModel):
+    tid: int
+    text: str

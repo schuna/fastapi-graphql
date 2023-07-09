@@ -5,8 +5,8 @@ import strawberry
 # noinspection PyPackageRequirements
 from strawberry.file_uploads import Upload
 
-from api.graphql.fields import UserSchema, FolderInput, UploadFileSchema
-from api.graphql.resolvers import get_users, create_user, get_user, upload_file
+from api.graphql.fields import UserSchema, FolderInput, UploadFileSchema, MessageSchema
+from api.graphql.resolvers import get_users, create_user, get_user, upload_file, get_messages
 from api.utils.auth import IsAuthenticated
 
 
@@ -19,6 +19,9 @@ class Query:
     users: list[UserSchema] = strawberry.field(
         resolver=get_users,
         # permission_classes=[IsAuthenticated]
+    )
+    messages: List[MessageSchema] = strawberry.field(
+        resolver=get_messages,
     )
 
 
@@ -67,6 +70,21 @@ class Subscription:
                 user = event.message
                 logger.info(f"publish user: {UserSchema(**user)}")
                 yield UserSchema(**user)
+
+    @strawberry.subscription
+    async def message_added_subscription(self, info) -> AsyncGenerator[List[MessageSchema], None]:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.setLevel(logging.DEBUG)
+        logger.info("starting add message")
+        logger.info(id(info.context.broadcast))
+
+        async with info.context.broadcast.subscribe(channel="add_message") as subscriber:
+            logger.info(f"{subscriber}")
+            async for event in subscriber:
+                messages = event.message
+                logger.info(f"publish: {len(messages)} messages")
+                yield [MessageSchema(**data) for data in messages]
 
 
 schema = strawberry.Schema(

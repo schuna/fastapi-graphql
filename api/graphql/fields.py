@@ -43,3 +43,10 @@ class UserCreateInput:
 @strawberry.input
 class FolderInput:
     files: List[Upload]
+
+
+@strawberry.type
+class MessageSchema:
+    id: strawberry.ID
+    tid: int
+    text: str

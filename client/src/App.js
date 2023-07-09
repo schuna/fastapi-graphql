@@ -4,7 +4,7 @@ import {useNavigate} from 'react-router';
 import {Route, Routes} from 'react-router-dom';
 import {isLoggedIn} from './auth';
 import LoginForm from './components/LoginForm';
-import UserBoard from './components/UserBoard';
+import DashBoard from './components/DashBoard';
 import UserDetail from './components/UserDetail';
 import UserForm from './components/UserForm';
 import NavBar from './components/NavBar';
@@ -31,7 +31,7 @@ function App() {
             <main className="section">
                 <Routes>
                     <Route exact path="/"
-                           element={<UserBoard/>}
+                           element={<DashBoard/>}
                     />
                     <Route exact path="/users/new"
                            element={<UserForm/>}

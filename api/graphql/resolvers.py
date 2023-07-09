@@ -1,6 +1,7 @@
 import os
 import uuid
 from pathlib import Path
+from typing import List
 
 from fastapi.encoders import jsonable_encoder
 from fastapi import HTTPException, status
@@ -9,7 +10,7 @@ from strawberry.file_uploads import Upload
 # noinspection PyPackageRequirements
 from strawberry.types import Info
 
-from api.graphql.fields import UserSchema, UserCreateInput, UploadFileSchema
+from api.graphql.fields import UserSchema, UserCreateInput, UploadFileSchema, MessageSchema
 from api.schemas import UserCreateSchema
 from api.utils.auth import Hash
 
@@ -44,3 +45,7 @@ async def upload_file(filename: str, file: Upload):
         fp.write(content)
 
     return UploadFileSchema(**{"filename": filename})
+
+
+async def get_messages(info: Info) -> List[MessageSchema]:
+    return info.context.message_repository.get_by_tid(1).data

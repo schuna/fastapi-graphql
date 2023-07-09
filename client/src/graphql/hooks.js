@@ -1,5 +1,11 @@
 import {useMutation, useQuery, useSubscription} from "@apollo/client";
-import {CREATE_USER_MUTATION, USERS_QUERY, USER_QUERY, USER_ADDED_SUBSCRIPTION} from "./queries";
+import {
+    CREATE_USER_MUTATION,
+    USERS_QUERY,
+    USER_QUERY,
+    USER_ADDED_SUBSCRIPTION,
+    MESSAGE_ADDED_SUBSCRIPTION, MESSAGES_QUERY
+} from "./queries";
 import {getAccessToken} from "../auth";
 
 
@@ -61,5 +67,24 @@ export function useUsers() {
     });
     return {
         users: data?.users ?? [],
+    };
+}
+
+export function useMessages() {
+    const {data} = useQuery(MESSAGES_QUERY, {
+        context: {
+            headers: {'Authorization': 'Bearer ' + getAccessToken()},
+        },
+    });
+    useSubscription(MESSAGE_ADDED_SUBSCRIPTION, {
+        onData: ({client, data}) => {
+            const messagesAdded = data.data.message;
+            client.cache.updateQuery({query: MESSAGES_QUERY}, ({messages}) => {
+                return {messages: [...messages, ...messagesAdded]};
+            });
+        },
+    });
+    return {
+        messages: data?.messages ?? [],
     };
 }

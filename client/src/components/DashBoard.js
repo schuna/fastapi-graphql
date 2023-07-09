@@ -1,17 +1,18 @@
 import UserList from './UserList';
 import {useUsers} from "../graphql/hooks";
+import Message from "./Message";
 
-function UserBoard() {
+function DashBoard() {
     const {users} = useUsers();
-    console.log('[UserBoard] users:', {users});
     return (
         <div>
             <h1 className="title">
-                User Board
+                Dash Board
             </h1>
             <UserList users={users}/>
+            <Message/>
         </div>
     );
 }
 
-export default UserBoard;
+export default DashBoard;
