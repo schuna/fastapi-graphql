@@ -80,13 +80,15 @@ export function useMessages(id) {
     useSubscription(MESSAGE_ADDED_SUBSCRIPTION, {
         onData: ({client, data}) => {
             const messageAdded = data.data.message;
-            client.cache.updateQuery({
-                query: MESSAGES_QUERY,
-                variables: {tid: parseInt(id)}
-            }, ({messages}) => {
-                return {messages: [...messages, messageAdded].slice(-100)};
-            });
-            client.cache.gc();
+            if (messageAdded.tid === id) {
+                client.cache.updateQuery({
+                    query: MESSAGES_QUERY,
+                    variables: {tid: parseInt(id)}
+                }, ({messages}) => {
+                    return {messages: [...messages, messageAdded].slice(-100)};
+                });
+                client.cache.gc();
+            }
         },
     });
     return {

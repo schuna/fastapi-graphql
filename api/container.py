@@ -21,8 +21,6 @@ class Container(containers.DeclarativeContainer):
         session_factory=db.provided.session,
     )
     message_repository = providers.Factory(
-        MessageRepository[Message, MessageCreateSchema],
-        model=Message,
-        session_factory=db.provided.session,
+        MessageRepository
     )
 

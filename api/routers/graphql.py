@@ -22,8 +22,7 @@ class CustomContext(BaseContext):
     def __init__(
             self,
             user_repository: UserRepository[User, UserCreateSchema] = Depends(Provide[Container.user_repository]),
-            message_repository: MessageRepository[
-                Message, MessageCreateSchema] = Depends(Provide[Container.message_repository])):
+            message_repository: MessageRepository = Depends(Provide[Container.message_repository])):
         super().__init__()
         self.message_repository = message_repository
         self.user_repository = user_repository

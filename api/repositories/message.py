@@ -1,36 +1,38 @@
-import logging
 from typing import List
 
 from api.graphql.fields import ResponseSchema, MessageSchema
-from api.models.message import Message
-from api.repositories.base import RepositoryBase, V, T
-from sqlalchemy.exc import IntegrityError
+
+message_buffer = dict()
 
 
-class MessageRepository(RepositoryBase[T, V]):
+class MessageRepository:
+    def __init__(self):
+        self.pid = 1
 
     def get_by_tid(self, tid: int, limit: int = 100) -> ResponseSchema:
-        with self.session_factory() as session:
-            messages = session.query(Message).filter(Message.tid == tid).order_by(Message.tid.desc())
-            return ResponseSchema(**{"data": messages[-limit:]})
+        if f"tid{tid}" not in message_buffer.keys():
+            message_buffer[f"tid{tid}"] = []
+        message_buffer[f"tid{tid}"] = message_buffer[f"tid{tid}"][-limit:]
+        return ResponseSchema(**{"data": message_buffer[f"tid{tid}"]})
 
     def get_max_id(self, tid: int) -> int:
-        with self.session_factory() as session:
-            messages = session.query(Message).filter(Message.tid == tid).order_by(Message.id.desc())
-            if messages.first():
-                return messages.first().id
+        if f"tid{tid}" not in message_buffer.keys():
+            message_buffer[f"tid{tid}"] = []
+        if message_buffer[f"tid{tid}"]:
+            return message_buffer[f"tid{tid}"][-1].id
+        else:
             return 0
 
     def add_by_tid(self, tid: int, messages: List[str]) -> ResponseSchema:
-        with self.session_factory() as session:
-            entries = []
-            for message in messages:
-                entry = self.model(**{"tid": tid, "text": message})
-                session.add(entry)
-                entries.append(entry)
-            session.commit()
-            return ResponseSchema(**{"data": [MessageSchema(**{
-                "id": x.id,
-                "tid": x.tid,
-                "text": x.text
-            }) for x in entries]})
+        entries = []
+        m_id = self.get_max_id(tid)
+        for message in messages:
+            m_id += 1
+            entry = MessageSchema(**{
+                "id": m_id,
+                "tid": tid,
+                "text": message
+            })
+            message_buffer[f"tid{tid}"].append(entry)
+            entries.append(entry)
+        return ResponseSchema(**{"data": entries})
