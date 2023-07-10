@@ -2,7 +2,7 @@ import {useMessages} from "../graphql/hooks";
 import MessageList from "./MessageList";
 
 function Message() {
-    const {messages} = useMessages();
+    const {messages} = useMessages(1);
     return (
         <section className="section">
             <div className="container">

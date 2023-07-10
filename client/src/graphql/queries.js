@@ -47,8 +47,8 @@ export const CREATE_USER_MUTATION = gql`
 
 
 export const MESSAGES_QUERY = gql`
-    query MessagesQuery {
-        messages {
+    query MessagesQuery($tid: Int!) {
+        messages: messages(tid: $tid) {
             id
             tid
             text
@@ -58,7 +58,7 @@ export const MESSAGES_QUERY = gql`
 
 export const MESSAGE_ADDED_SUBSCRIPTION = gql`
     subscription MessageAddedSubscription {
-        messages: messageAddedSubscription {
+        message: messageAddedSubscription {
             id    
             tid
             text

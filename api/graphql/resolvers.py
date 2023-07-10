@@ -1,10 +1,11 @@
 import os
+import time
 import uuid
 from pathlib import Path
 from typing import List
 
-from fastapi.encoders import jsonable_encoder
 from fastapi import HTTPException, status
+from fastapi.encoders import jsonable_encoder
 # noinspection PyPackageRequirements
 from strawberry.file_uploads import Upload
 # noinspection PyPackageRequirements
@@ -47,5 +48,13 @@ async def upload_file(filename: str, file: Upload):
     return UploadFileSchema(**{"filename": filename})
 
 
-async def get_messages(info: Info) -> List[MessageSchema]:
-    return info.context.message_repository.get_by_tid(1).data
+async def get_messages(tid: int, info: Info) -> List[MessageSchema]:
+    return info.context.message_repository.get_by_tid(tid).data
+
+
+async def add_messages(tid: int, info: Info) -> List[MessageSchema]:
+    id_max = info.context.message_repository.get_max_id(tid)
+    data = [f'{id_max + x + 1}' for x in range(100)]
+    response = info.context.message_repository.add_by_tid(tid=tid, messages=data)
+    await info.context.broadcast.publish(channel="add_message", message=response.data)
+    return response.data

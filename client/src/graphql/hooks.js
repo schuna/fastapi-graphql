@@ -70,18 +70,23 @@ export function useUsers() {
     };
 }
 
-export function useMessages() {
+export function useMessages(id) {
     const {data} = useQuery(MESSAGES_QUERY, {
+        variables: {tid: parseInt(id)},
         context: {
             headers: {'Authorization': 'Bearer ' + getAccessToken()},
         },
     });
     useSubscription(MESSAGE_ADDED_SUBSCRIPTION, {
         onData: ({client, data}) => {
-            const messagesAdded = data.data.message;
-            client.cache.updateQuery({query: MESSAGES_QUERY}, ({messages}) => {
-                return {messages: [...messages, ...messagesAdded]};
+            const messageAdded = data.data.message;
+            client.cache.updateQuery({
+                query: MESSAGES_QUERY,
+                variables: {tid: parseInt(id)}
+            }, ({messages}) => {
+                return {messages: [...messages, messageAdded].slice(-100)};
             });
+            client.cache.gc();
         },
     });
     return {
